@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Miller Indices — Cubic Crystal Systems</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B2545;--panel:#0D2D4F;--card:#132E54;--line:#1A3A60;--blue:#1B5FAD;--white:#EEF5FB;--mute:#7AAFD4;--dim:#4A6B8A;
+  --plane:#E09030;--dang:#D946EF;--inplane:#2DD4DF;--sat:#B8D4EE;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit;margin:0;padding:0}
+html,body{height:100%;background:var(--navy);color:var(--white);font-family:'Inter',system-ui,sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%}
+#hdr{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:9px 14px;border-bottom:1px solid var(--line)}
+#hdr h1{font-size:14px;font-weight:600;white-space:nowrap}
+#ctrls{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.seg,.spin{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.spin{background:var(--card)}
+button{font:inherit;font-size:12px;font-weight:500;color:var(--mute);background:transparent;border:0;cursor:pointer;padding:5px 11px;white-space:nowrap;transition:background .15s,color .15s}
+button:hover{background:#1B4A80;color:#fff}
+button.on{background:var(--blue);color:#fff}
+.tog{border:1px solid var(--line);border-radius:8px}
+.seg span,.spin i{font-size:11px;font-weight:600;color:var(--mute);padding:0 8px;border-right:1px solid var(--line)}
+.spin i{font-style:italic}
+.spin button{padding:5px 9px;font-size:13px}
+.spin b{min-width:20px;text-align:center;font-size:14px;font-weight:700}
+#main{display:flex;flex:1;min-height:0}
+#cw{position:relative;flex:1;min-width:0}
+#c{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);pointer-events:none;font-size:11px;color:var(--mute);background:rgba(11,37,69,.85);padding:3px 10px;border-radius:12px}
+#axleg{position:absolute;bottom:44px;left:12px;display:flex;flex-direction:column;gap:3px;font-size:11px;background:rgba(7,18,40,.88);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+#axleg div{display:flex;align-items:center;gap:6px}
+#pnl{width:240px;min-width:240px;display:flex;flex-direction:column;gap:9px;overflow-y:auto;padding:12px;background:var(--panel);border-left:1px solid var(--line)}
+.lab{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-bottom:2px}
+.card{background:var(--card);border-radius:8px;padding:11px 13px}
+#p-hkl{font-size:36px;font-weight:700;color:var(--plane);line-height:1;letter-spacing:3px}
+#p-fam{font-size:11px;color:var(--dim);margin-top:6px}
+.neg{text-decoration:overline}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:4px 0;border-bottom:1px solid var(--line);font-size:12px}
+.row:last-child{border-bottom:0}
+.row span:first-child{color:var(--dim)}
+.row span:last-child{font-weight:500;text-align:right}
+.note{font-size:11px;line-height:1.5;color:var(--dim)}
+#p-desc{font-size:12px;line-height:1.65;color:var(--mute);background:var(--card);border-radius:8px;padding:11px 13px}
+.counts{display:flex;justify-content:space-between;margin-bottom:10px;font-size:11px;color:var(--dim)}
+.counts b{display:block;font-size:26px;font-weight:700}
+.eq{text-align:center;font-size:14px;font-weight:600;margin-bottom:6px}
+.qr{display:flex;flex-wrap:wrap;gap:5px}
+.qr button{font-size:11px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:4px 9px}
+.qr button.on{background:var(--blue);border-color:var(--blue)}
+.dot,.bar,.box,.ico{display:inline-block;flex-shrink:0}
+.dot{width:10px;height:10px;border-radius:50%}
+.bar{width:16px;height:4px;border-radius:2px}
+.box{width:16px;height:9px;border:1.5px solid rgba(255,255,255,.65);border-radius:2px}
+.ico{width:11px;height:11px}
+.ico-tri{clip-path:polygon(50% 0%,0% 100%,100% 100%)}
+.ico-dia{clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)}
+.ico-sq{border-radius:2px}
+#axleg .bar{height:3px;width:14px}
+#leg{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:7px 14px;border-top:1px solid var(--line)}
+#leg span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mute)}
+#leg [data-show]{display:none}
+@media(max-width:680px){
+  #main{flex-direction:column}
+  #cw{flex:0 0 52%}
+  #pnl{width:auto;min-width:0;flex:1;border-left:0;border-top:1px solid var(--line)}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<header id="hdr">
+  <h1>Miller Indices — Cubic Systems</h1>
+  <div id="ctrls">
+    <div class="seg" id="crystalSeg"><button class="on" data-v="SC">SC</button><button data-v="FCC">FCC</button><button data-v="BCC">BCC</button></div>
+    <div class="spin"><i>h</i><button data-d="-1">−</button><b></b><button data-d="1">+</button></div>
+    <div class="spin"><i>k</i><button data-d="-1">−</button><b></b><button data-d="1">+</button></div>
+    <div class="spin"><i>l</i><button data-d="-1">−</button><b></b><button data-d="1">+</button></div>
+    <div class="seg" id="viewSeg"><button class="on" data-v="cell">Unit cell</button><button data-v="ext">Extended</button></div>
+    <button class="tog on" id="hklBtn">(hkl) plane</button>
+    <button class="tog" id="planeBtn">∞ plane</button>
+    <button class="tog" id="dangBtn">Dangling bonds</button>
+    <div class="seg" id="holeSeg"><span>Holes</span><button data-hole="tet" title="Tetrahedral">Tet</button><button data-hole="oct" title="Octahedral">Oct</button><button data-hole="cub" title="Cubic">Cub</button></div>
+    <button class="tog" id="polyBtn" title="Show filled polyhedra around holes">Polyhedra</button>
+    <button class="tog" id="resetBtn">↺ Reset</button>
+  </div>
+</header>
+<div id="main">
+  <div id="cw">
+    <canvas id="c"></canvas>
+    <div id="hint">drag to rotate · scroll / pinch to zoom</div>
+    <div id="axleg">
+      <div><i class="bar" style="background:#E05050"></i>a = x</div>
+      <div><i class="bar" style="background:#40B870"></i>b = y</div>
+      <div><i class="bar" style="background:#5090E0"></i>c = z</div>
+    </div>
+  </div>
+  <aside id="pnl">
+    <div><div class="lab">selected plane</div><div class="card" style="text-align:center;padding:16px"><div id="p-hkl"></div><div id="p-fam"></div></div></div>
+    <div><div class="lab">plane properties</div><div class="card" id="props"></div></div>
+    <div id="p-desc"></div>
+    <div id="dang"></div>
+    <div id="holes"></div>
+    <div><div class="lab">common planes</div><div class="card" style="padding:8px"><div class="qr">
+      <button data-hkl="1,0,0">(100)</button><button data-hkl="1,1,0" class="on">(110)</button><button data-hkl="1,1,1">(111)</button><button data-hkl="2,0,0">(200)</button>
+      <button data-hkl="2,1,0">(210)</button><button data-hkl="2,1,1">(211)</button><button data-hkl="3,1,0">(310)</button><button data-hkl="3,2,1">(321)</button>
+    </div></div></div>
+  </aside>
+</div>
+<div id="leg">
+  <span><i class="dot" style="background:#4A80C8"></i>corner atom</span>
+  <span><i class="dot" style="background:#6AAAD8"></i>face center (FCC)</span>
+  <span><i class="dot" style="background:#3060A8"></i>body center (BCC)</span>
+  <span><i class="bar" style="background:var(--plane)"></i>(hkl) plane</span>
+  <span><i class="box"></i>unit cell</span>
+  <span data-show="db"><i class="dot" style="background:#F0C040"></i>surface atom</span>
+  <span data-show="db"><i class="bar" style="background:var(--dang)"></i>dangling</span>
+  <span data-show="db"><i class="bar" style="background:var(--inplane)"></i>in-plane</span>
+  <span data-show="db"><i class="bar" style="background:var(--sat)"></i>satisfied</span>
+  <span data-show="tet"><i class="ico ico-tri" style="background:#FACC15"></i>tetrahedral hole</span>
+  <span data-show="oct"><i class="ico ico-dia" style="background:#2DD4BF"></i>octahedral hole</span>
+  <span data-show="cub"><i class="ico ico-sq" style="background:#A78BFA"></i>cubic hole</span>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+// ============================================================================
+// 1. CRYSTAL LOGIC — pure functions, no THREE / DOM (unit-tested offline).
+//    Crystal coordinates: lattice parameter a = 1, conventional cell = [0,1]^3.
+// ============================================================================
+// <logic>
+const TOL=1e-6;
+const BASIS={SC:[[0,0,0]],FCC:[[0,0,0],[.5,.5,0],[.5,0,.5],[0,.5,.5]],BCC:[[0,0,0],[.5,.5,.5]]};
+const NN=(()=>{                       // nearest-neighbour vectors
+  const o={SC:[],FCC:[],BCC:[]};
+  for(const s of[-1,1])o.SC.push([s,0,0],[0,s,0],[0,0,s]);
+  for(const s of[-.5,.5])for(const t of[-.5,.5]){o.FCC.push([s,t,0],[s,0,t],[0,s,t]);for(const u of[-.5,.5])o.BCC.push([s,t,u]);}
+  return o;
+})();
+// Interstitial hole sites in ONE conventional cell (so .length = holes per cell), and CN of each hole.
+const HOLES={
+  SC:{cub:[[.5,.5,.5]]},
+  FCC:{oct:[[.5,.5,.5],[.5,0,0],[0,.5,0],[0,0,.5]],
+       tet:[.25,.75].flatMap(x=>[.25,.75].flatMap(y=>[.25,.75].map(z=>[x,y,z])))},
+  BCC:{oct:[[.5,0,0],[0,.5,0],[0,0,.5],[.5,.5,0],[.5,0,.5],[0,.5,.5]],
+       tet:[[0,.25,.5],[0,.75,.5],[0,.5,.25],[0,.5,.75],[.25,0,.5],[.75,0,.5],[.5,0,.25],[.5,0,.75],[.25,.5,0],[.75,.5,0],[.5,.25,0],[.5,.75,0]]}
+};
+const HOLE_K={tet:4,oct:6,cub:8};
+const HOLE_NAME={tet:'Tetrahedral',oct:'Octahedral',cub:'Cubic'};
+
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+const unit=v=>{const l=Math.hypot(...v);return v.map(c=>c/l);};
+const centroid=P=>P.reduce((s,p)=>add(s,p.map(c=>c/P.length)),[0,0,0]);
+const posKey=p=>p.map(v=>Math.round(v*4)).join(',');
+const sortedAbs=h=>h.map(v=>Math.abs(v)).sort((a,b)=>b-a);
+const isLowIndex=h=>['100','110','111'].includes(sortedAbs(h).join(''));
+const fmt=x=>String(+x.toFixed(3));
+const atomType=p=>['corner','face','face','body'][p.filter(v=>Math.abs(v-Math.round(v))>.25).length];
+
+// Polygon where plane h·x = n cuts the cube [0,N]^3 (sorted around its centroid), or null.
+function planePolygon(hkl,n,N){
+  const V=[...Array(8)].map((_,i)=>[(i&1)*N,((i>>1)&1)*N,((i>>2)&1)*N]);
+  const E=[[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]];
+  const P=[];
+  for(const[a,b]of E){
+    const fa=dot(hkl,V[a])-n,df=dot(hkl,V[b])-n-fa;
+    if(Math.abs(df)<TOL)continue;
+    const t=-fa/df;
+    if(t<-TOL||t>1+TOL)continue;
+    const c=Math.min(1,Math.max(0,t));
+    P.push(V[a].map((v,i)=>v+c*(V[b][i]-v)));
+  }
+  const U=P.filter((p,i)=>!P.slice(0,i).some(q=>dist(p,q)<TOL));
+  if(U.length<3)return null;
+  const c=centroid(U),nrm=unit(hkl),t1=unit(cross(nrm,Math.abs(nrm[0])<.9?[1,0,0]:[0,1,0])),t2=cross(nrm,t1);
+  const ang=p=>{const d=[p[0]-c[0],p[1]-c[1],p[2]-c[2]];return Math.atan2(dot(d,t2),dot(d,t1));};
+  return U.sort((a,b)=>ang(a)-ang(b));
+}
+// All parallel planes h·x = n (integer n) that cut [0,N]^3, and the one drawn as "primary" (n closest to 1).
+function planesThroughBox(hkl,N){
+  const lo=N*hkl.reduce((s,v)=>s+Math.min(v,0),0),hi=N*hkl.reduce((s,v)=>s+Math.max(v,0),0),out=[];
+  for(let n=Math.ceil(lo);n<=Math.floor(hi);n++){const poly=planePolygon(hkl,n,N);if(poly)out.push({n,poly});}
+  return out;
+}
+function primaryPlane(hkl,P,atoms){       // n closest to 1, preferring planes that contain atoms
+  const has=P.filter(q=>atoms.some(a=>Math.abs(dot(hkl,a)-q.n)<TOL)),pool=has.length?has:P;
+  return pool.length?pool.reduce((a,b)=>Math.abs(b.n-1)<=Math.abs(a.n-1)?b:a):null;
+}
+
+function atomsInBox(ct,N){
+  const out=[];
+  for(let i=0;i<=N;i++)for(let j=0;j<=N;j++)for(let k=0;k<=N;k++)for(const b of BASIS[ct]){
+    const p=[i+b[0],j+b[1],k+b[2]];
+    if(p.every(v=>v<=N+TOL))out.push(p);
+  }
+  return out;
+}
+function nearestOnPlane(atoms,hkl,n,target){
+  let best=null,bd=Infinity;
+  for(const p of atoms){
+    if(Math.abs(dot(hkl,p)-n)>TOL)continue;
+    const d=dist(p,target);
+    if(d<bd-1e-9){bd=d;best=p;}
+  }
+  return best;
+}
+// Two shortest independent lattice vectors lying in the plane h·x = 0 (a basis of the 2-D surface lattice).
+function surfaceVectors(hkl,ct){
+  const C=[];
+  for(let a=-4;a<=4;a++)for(let b=-4;b<=4;b++)for(let c=-4;c<=4;c++)for(const s of BASIS[ct]){
+    const p=[a+s[0],b+s[1],c+s[2]],l2=dot(p,p);
+    if(l2>TOL&&Math.abs(dot(hkl,p))<TOL)C.push([l2,p]);
+  }
+  C.sort((x,y)=>x[0]-y[0]);
+  if(!C.length)return null;
+  const v1=C[0][1],hit=C.find(([,p])=>dot(cross(v1,p),cross(v1,p))>1e-8);
+  return hit?[v1,hit[1]]:null;
+}
+// Nearest neighbours split by the surface plane: above (dangling), in the plane, below (satisfied).
+function bondShell(hkl,ct){
+  const s={up:[],inPlane:[],down:[]};
+  for(const v of NN[ct]){const d=dot(hkl,v);(d>TOL?s.up:d<-TOL?s.down:s.inPlane).push(v);}
+  return s;
+}
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+function layerSpacing(hkl,ct){          // real spacing of atomic layers (a = 1)
+  const g=hkl.reduce((a,v)=>gcd(a,Math.abs(v)),0),r=hkl.map(v=>v/g),d=1/Math.hypot(...r),par=r.map(v=>Math.abs(v)%2);
+  const halve=ct==='BCC'?(par[0]+par[1]+par[2])%2===1:ct==='FCC'?!(par[0]===par[1]&&par[1]===par[2]):false;
+  return halve?d/2:d;
+}
+function planarDensity(hkl,ct){          // atoms per a² in one atomic layer
+  const v=surfaceVectors(hkl,ct);
+  return v?1/Math.hypot(...cross(v[0],v[1])):null;
+}
+function multiplicity(hkl){
+  const[a,b,c]=sortedAbs(hkl);
+  if(b===0)return 6;
+  if(c===0)return a===b?12:24;
+  if(a===b&&b===c)return 8;
+  return a===b||b===c?24:48;
+}
+function equationText(hkl){
+  const parts=[];
+  hkl.forEach((c,i)=>{
+    if(!c)return;
+    const body=(Math.abs(c)===1?'':Math.abs(c))+'xyz'[i];
+    parts.push(parts.length?(c>0?' + ':' − ')+body:(c<0?'−':'')+body);
+  });
+  return parts.join('')+' = n';
+}
+function dSpacingText(hkl){
+  const n2=dot(hkl,hkl),s=Math.sqrt(n2);
+  return Number.isInteger(s)?(s===1?'a':`a/${s}`):`a/√${n2} = ${fmt(1/s)}a`;
+}
+// Interstitial holes of one type inside [0,N]^3, the k atoms around a site, polyhedron edges, and r/R.
+function holeSitesInBox(ct,type,N){
+  const out=[];
+  for(const s of HOLES[ct][type]||[])
+    for(let i=0;i<=N;i++)for(let j=0;j<=N;j++)for(let k=0;k<=N;k++){
+      const p=[s[0]+i,s[1]+j,s[2]+k];
+      if(p.every(v=>v<=N+TOL))out.push(p);
+    }
+  return out;
+}
+function nearestAtoms(ct,p,k){
+  const c=p.map(Math.round),P=[];
+  for(let i=-2;i<=2;i++)for(let j=-2;j<=2;j++)for(let l=-2;l<=2;l++)
+    for(const b of BASIS[ct])P.push([c[0]+i+b[0],c[1]+j+b[1],c[2]+l+b[2]]);
+  return P.sort((a,b)=>dist(a,p)-dist(b,p)).slice(0,k);
+}
+function holeEdges(type,V,site){
+  const pairs=[];
+  for(let i=0;i<V.length;i++)for(let j=i+1;j<V.length;j++)pairs.push([V[i],V[j]]);
+  const minD=Math.min(...pairs.map(([a,b])=>dist(a,b)));
+  return pairs.filter(([a,b])=>type==='tet'||(type==='oct'
+    ?dist(site,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2])>TOL   // drop the 3 antipodal pairs
+    :dist(a,b)<minD+TOL));                                        // cube: keep only edges
+}
+function holeRatio(ct,type){             // r_hole / R_atom for touching hard spheres
+  const s=HOLES[ct][type][0],R=Math.hypot(...NN[ct][0])/2;
+  return (dist(nearestAtoms(ct,s,1)[0],s)-R)/R;
+}
+// </logic>
+
+// ============================================================================
+// 2. SCENE
+// ============================================================================
+const $=id=>document.getElementById(id);
+const S=2.1;                                         // world units per lattice parameter
+const COL={plane:0xE09030,planeEdge:0xF0B040,planeDim:0xD09030,cell:0xFFFFFF,ref:0xF0C040,dang:0xD946EF,inPlane:0x2DD4DF,sat:0xB8D4EE,
+  atom:{corner:0x4A80C8,face:0x6AAAD8,body:0x3060A8},axis:[0xE05050,0x40B870,0x5090E0],hole:{tet:0xFACC15,oct:0x2DD4BF,cub:0xA78BFA}};
+const RAD={corner:.11,face:.095,body:.095},RAD_X={corner:.075,face:.065,body:.065};
+const phong=(color,opacity=1,shininess=60)=>new THREE.MeshPhongMaterial({color,shininess,transparent:opacity<1,opacity});
+const MAT={ref:phong(COL.ref,1,90),dang:phong(COL.dang,1,55),ghost:phong(COL.dang,.3),inPlane:phong(COL.inPlane),sat:phong(COL.sat,1,40),
+  patch:new THREE.MeshPhongMaterial({color:COL.atom.corner,shininess:75,emissive:0x0A1830}),
+  axis:COL.axis.map(color=>new THREE.MeshBasicMaterial({color,depthTest:false})),hole:{}};
+for(const t in COL.atom){MAT[t]=phong(COL.atom[t]);MAT[t+'X']=phong(COL.atom[t],.72);}
+for(const t in COL.hole)MAT.hole[t]=phong(COL.hole[t],1,70);
+
+const canvas=$('c'),wrap=$('cw');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setClearColor(0x0B2545,1);
+const scene=new THREE.Scene();
+scene.add(new THREE.AmbientLight(0xffffff,.55));
+const keyLight=new THREE.DirectionalLight(0xffffff,.65);keyLight.position.set(3,5,4);scene.add(keyLight);
+const fillLight=new THREE.DirectionalLight(0x7AAFD4,.22);fillLight.position.set(-3,-2,-3);scene.add(fillLight);
+const camera=new THREE.PerspectiveCamera(28,1,.01,300);
+let camDist=1;
+function setCam(d){camDist=Math.max(S*1.5,Math.min(S*40,d));camera.position.set(0,camDist*.4,camDist);camera.lookAt(0,0,0);}
+const G=new THREE.Group();scene.add(G);            // everything rotates inside G; the camera never moves
+
+// --- state -----------------------------------------------------------------
+let hkl=[1,1,0],crystal='SC',viewMode='cell',showPlane=false,showDangling=false,autoRotate=true,ctr=.5,showPolyhedra=false,showHklPlane=true;
+const holeOn={tet:false,oct:false,cub:false};
+const HOLE_ICON={tet:'ico ico-tri',oct:'ico ico-dia',cub:'ico ico-sq'};
+
+// --- drawing helpers (G is rebuilt by build()) -----------------------------
+const toScene=p=>new THREE.Vector3((p[0]-ctr)*S,(p[1]-ctr)*S,(p[2]-ctr)*S);
+const Y_AXIS=new THREE.Vector3(0,1,0);
+function clearGroup(g){g.traverse(o=>{if(o.geometry)o.geometry.dispose();});g.clear();}
+function addSpheres(pts,radius,material,order=0){
+  if(!pts.length)return;
+  const m=new THREE.InstancedMesh(new THREE.SphereGeometry(radius,14,10),material,pts.length),M4=new THREE.Matrix4();
+  pts.forEach((p,i)=>{M4.setPosition(p.x,p.y,p.z);m.setMatrixAt(i,M4);});
+  m.instanceMatrix.needsUpdate=true;m.frustumCulled=false;m.renderOrder=order;G.add(m);
+}
+function addBond(a,b,r,material,order=0){
+  const d=new THREE.Vector3().subVectors(b,a),len=d.length();
+  if(len<1e-3)return;
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,8),material);
+  m.position.addVectors(a,b).multiplyScalar(.5);
+  m.quaternion.setFromUnitVectors(Y_AXIS,d.normalize());
+  m.renderOrder=order;G.add(m);
+}
+function addLines(pts,color,opacity,order){            // pts = flat list of segment endpoints
+  if(!pts.length)return;
+  const m=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({color,transparent:opacity<1,opacity,depthTest:false,depthWrite:false}));
+  m.renderOrder=order;G.add(m);
+}
+const loop=P=>P.flatMap((p,i)=>[p,P[(i+1)%P.length]]);
+function addFill(P,color,opacity,order){               // convex polygon as a triangle fan
+  const c=P.reduce((s,p)=>s.add(p),new THREE.Vector3()).multiplyScalar(1/P.length);
+  const m=new THREE.Mesh(new THREE.BufferGeometry().setFromPoints(P.flatMap((p,i)=>[c,p,P[(i+1)%P.length]])),
+    new THREE.MeshBasicMaterial({color,transparent:true,opacity,side:THREE.DoubleSide,depthWrite:false}));
+  m.renderOrder=order;G.add(m);
+}
+
+// --- scene parts -----------------------------------------------------------
+function drawAtoms(atoms,faded,skip){
+  const by={corner:[],face:[],body:[]};
+  for(const p of atoms)if(!skip.has(posKey(p)))by[atomType(p)].push(toScene(p));
+  for(const t in by)addSpheres(by[t],S*(faded?RAD_X:RAD)[t],MAT[faded?t+'X':t]);
+}
+function drawCells(N,faded){
+  const E=[[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]],pts=[];
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)for(let k=0;k<N;k++){
+    const c=[...Array(8)].map((_,b)=>toScene([i+(b&1),j+((b>>1)&1),k+((b>>2)&1)]));
+    for(const[a,b]of E)pts.push(c[a],c[b]);
+  }
+  addLines(pts,COL.cell,faded ? .38 : 1,999);
+}
+function drawPlanes(planes,prim,primaryOnly){
+  for(const{n,poly}of planes){
+    const isPrim=n===prim.n;
+    if(primaryOnly&&!isPrim)continue;
+    const P=poly.map(toScene);
+    addFill(P,COL.plane,isPrim ? .52 : .2,10);
+    addLines(loop(P),isPrim?COL.planeEdge:COL.planeDim,1,50);
+  }
+}
+// 10×10 surface unit cells of the primary plane: grid follows the 2-D lattice, atoms sit on its nodes.
+function drawSurfacePatch(ref){
+  const v=surfaceVectors(hkl,crystal);
+  if(!v)return;
+  const H=5,node=(i,j)=>toScene(ref.map((c,k)=>c+i*v[0][k]+j*v[1][k])),grid=[],mid=[],pts=[];
+  addFill([node(-H,-H),node(H,-H),node(H,H),node(-H,H)],COL.plane,.1,4);
+  for(let a=-H;a<=H;a++){
+    (a?grid:mid).push(node(-H,a),node(H,a),node(a,-H),node(a,H));
+    for(let b=-H;b<=H;b++)pts.push(node(a,b));
+  }
+  addLines(grid,COL.plane,.3,6);addLines(mid,COL.planeEdge,.75,7);
+  addSpheres(pts,S*.11,MAT.patch,8);
+}
+// One surface atom with its full nearest-neighbour shell: dangling / in-plane / satisfied bonds.
+function drawBondShell(ref,shell){
+  const p0=toScene(ref);
+  for(const[vecs,bond,r,ghost]of[[shell.up,MAT.dang,.042,true],[shell.inPlane,MAT.inPlane,.036],[shell.down,MAT.sat,.036]]){
+    const Q=vecs.map(v=>add(ref,v));
+    Q.forEach(q=>addBond(p0,toScene(q),S*r,bond));
+    if(ghost)addSpheres(Q.map(toScene),S*.075,MAT.ghost);
+    else drawAtoms(Q,false,new Set());
+  }
+  addSpheres([p0],S*.12,MAT.ref);
+}
+// Convex hull triangulation for any set of points (returns flat array of THREE.Vector3 triples).
+function convexFaces(verts){
+  const n=verts.length,cen=new THREE.Vector3();
+  verts.forEach(v=>cen.add(v));cen.divideScalar(n);
+  const out=[];
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)for(let k=j+1;k<n;k++){
+    const a=verts[i],b=verts[j],c=verts[k];
+    const ab=new THREE.Vector3().subVectors(b,a),ac=new THREE.Vector3().subVectors(c,a);
+    const nm=new THREE.Vector3().crossVectors(ab,ac);
+    if(nm.lengthSq()<1e-10)continue;
+    let ok=true,ref=0;
+    for(let m=0;m<n;m++){
+      if(m===i||m===j||m===k)continue;
+      const s=nm.dot(new THREE.Vector3().subVectors(verts[m],a));
+      if(Math.abs(s)<1e-6)continue;  // skip coplanar vertices
+      if(!ref)ref=s>0?1:-1;else if((s>0?1:-1)!==ref){ok=false;break;}
+    }
+    if(!ok)continue;
+    const fc=new THREE.Vector3().addVectors(a,b).add(c).divideScalar(3);
+    const inward=new THREE.Vector3().subVectors(cen,fc).dot(nm)>0;
+    out.push(a.clone(),inward?c.clone():b.clone(),inward?b.clone():c.clone());
+  }
+  return out;
+}
+function addPolyFaces(verts,color,opacity){
+  const tris=convexFaces(verts);if(!tris.length)return;
+  const pos=new Float32Array(tris.length*3);
+  tris.forEach((v,i)=>{pos[i*3]=v.x;pos[i*3+1]=v.y;pos[i*3+2]=v.z;});
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  geo.computeVertexNormals();
+  const m=new THREE.Mesh(geo,new THREE.MeshPhongMaterial({color,transparent:true,opacity,side:THREE.DoubleSide,depthWrite:false,shininess:30}));
+  m.renderOrder=55;G.add(m);
+}
+// Shape-specific instanced markers: tetrahedron / octahedron / box (NOT spheres, to avoid atom confusion).
+function addHoleMarkers(pts,type,material){
+  const r=S*.068;
+  const geo=type==='tet'?new THREE.TetrahedronGeometry(r,0):type==='oct'?new THREE.OctahedronGeometry(r,0):new THREE.BoxGeometry(r,r,r);
+  const m=new THREE.InstancedMesh(geo,material,pts.length),M4=new THREE.Matrix4();
+  pts.forEach((p,i)=>{M4.setPosition(p.x,p.y,p.z);m.setMatrixAt(i,M4);});
+  m.instanceMatrix.needsUpdate=true;m.frustumCulled=false;m.renderOrder=61;G.add(m);
+}
+function drawHoles(N){
+  for(const t in holeOn){
+    if(!holeOn[t])continue;
+    const sites=holeSitesInBox(crystal,t,N),edges=[],outside=new Map();
+    for(const s of sites){
+      const V=nearestAtoms(crystal,s,HOLE_K[t]);
+      const sv=V.map(toScene);
+      if(showPolyhedra){
+        holeEdges(t,V,s).forEach(([a,b])=>edges.push(toScene(a),toScene(b)));
+        V.filter(q=>q.some(c=>c<-TOL||c>N+TOL)).forEach(q=>outside.set(posKey(q),q));
+      }
+    }
+    if(showPolyhedra){
+      drawAtoms([...outside.values()],true,new Set());   // atoms just outside the box that close the polyhedra
+      addLines(edges,COL.hole[t],.8,60);
+    }
+    addHoleMarkers(sites.map(toScene),t,MAT.hole[t]);
+  }
+}
+function drawAxes(N){
+  COL.axis.forEach((_,i)=>{
+    const tip=toScene([0,1,2].map(c=>c===i?N+.35:0));
+    addBond(toScene([0,0,0]),tip,S*.022,MAT.axis[i],999);
+    addSpheres([tip],S*.04,MAT.axis[i],999);
+  });
+}
+
+function build(){
+  clearGroup(G);
+  const N=viewMode==='ext'?2:1,faded=N===2;
+  ctr=N/2;
+  const planes=planesThroughBox(hkl,N),atoms=atomsInBox(crystal,N),prim=primaryPlane(hkl,planes,atoms);
+  const ref=prim&&nearestOnPlane(atoms,hkl,prim.n,centroid(prim.poly));
+  const shell=showDangling&&ref&&isLowIndex(hkl)?bondShell(hkl,crystal):null;
+  const skip=new Set();
+  if(shell){skip.add(posKey(ref));NN[crystal].forEach(v=>skip.add(posKey(add(ref,v))));}
+  // with dangling bonds on, show only the crystal below the surface (the vacuum side is removed)
+  drawAtoms(shell?atoms.filter(p=>dot(hkl,p)<=prim.n+TOL):atoms,faded,skip);
+  drawCells(N,faded);
+  if(prim&&showHklPlane)drawPlanes(planes,prim,!!shell);
+  if(showPlane&&ref)drawSurfacePatch(ref);
+  if(shell)drawBondShell(ref,shell);
+  drawHoles(N);
+  drawAxes(N);
+  updateUI(planes.length,shell);
+}
+
+// ============================================================================
+// 3. UI
+// ============================================================================
+const DESCS={
+  100:'Cube face, parallel to two axes. The simplest plane; the {100} family has 6 members.',
+  110:'Face-diagonal plane: parallel to one axis, cutting the other two equally. The close-packed plane of BCC metals (Fe, W, Mo).',
+  111:'Body-diagonal plane: cuts all three axes equally, triangular section. Close-packed in FCC (the slip plane); the most open of the three in BCC.',
+  200:'Second order of (100): twice as many planes at half the spacing. Its X-ray reflection is allowed in FCC and BCC, while (100) is not.',
+  210:'Rectangular cut parallel to the c axis. 24 equivalent planes.',
+  211:'24 equivalent planes. {112}-type planes act as twinning and secondary slip planes in BCC metals.',
+  310:'Stepped (vicinal-type) surface built from (100) terraces and steps. 24 equivalent planes.',
+  321:'General plane (all indices different): 48 equivalent planes, the maximum in cubic symmetry. Chiral: it lacks mirror symmetry.'
+};
+const idx=v=>v<0?`<span class="neg">${-v}</span>`:`${v}`;
+const rows=R=>R.map(([a,b])=>`<div class="row"><span>${a}</span><span>${b}</span></div>`).join('');
+
+function updateUI(shown,shell){
+  const n2=dot(hkl,hkl),d=1/Math.sqrt(n2),ls=layerSpacing(hkl,crystal),rho=planarDensity(hkl,crystal),icpt=hkl.map(v=>v?fmt(1/v):'∞').join(', ');
+  $('p-hkl').innerHTML=`(${hkl.map(idx).join('&thinsp;')})`;
+  $('p-fam').textContent=`{${hkl.map(Math.abs).join('')}} family`;
+  $('props').innerHTML=rows([['Equation',equationText(hkl)],['d-spacing',dSpacingText(hkl)],
+    ['Layer spacing',`${fmt(ls)}a${Math.abs(ls-d)<TOL?'':ls<d?' (= d/2)':` (= ${fmt(ls/d)}d)`}`],['Atoms per a²',rho?fmt(rho):'—'],
+    ['Intercepts',icpt],['Multiplicity',`${multiplicity(hkl)} planes`],['Planes shown',shown]]);
+  $('p-desc').textContent=DESCS[sortedAbs(hkl).join('')]||`The (${hkl.join(' ')}) planes cut the a, b, c axes at ${icpt}; spacing a/√${n2}.`;
+  document.querySelectorAll('.spin b').forEach((b,i)=>{b.textContent=hkl[i];});
+  document.querySelectorAll('.qr button').forEach(b=>b.classList.toggle('on',b.dataset.hkl===hkl.join(',')));
+
+  const low=isLowIndex(hkl);
+  $('dang').style.display=showDangling?'':'none';
+  $('dangBtn').style.opacity = low ? 1 : .55;
+  $('dangBtn').disabled = !low;
+  if(showDangling)$('dang').innerHTML='<div class="lab">dangling bonds · per surface atom</div><div class="card">'+(shell?
+    `<div class="counts"><div><b style="color:var(--dang)">${shell.up.length}</b>dangling</div>
+     <div><b style="color:var(--inplane)">${shell.inPlane.length}</b>in-plane</div>
+     <div><b style="color:var(--sat)">${shell.down.length}</b>satisfied</div></div>
+     <div class="eq">( ${NN[crystal].length} − ${shell.inPlane.length} ) ÷ 2 = ${shell.up.length}</div>
+     <div class="note">dangling = (coordination − in-plane) ÷ 2. The surface atom keeps ${shell.inPlane.length+shell.down.length} of ${NN[crystal].length} bonds. Ideal bulk-terminated surface (no relaxation or reconstruction).</div>`
+    :'<div class="note">Shown for {100}, {110} and {111} planes only.</div>')+'</div>';
+
+  const anyHole=Object.values(holeOn).some(Boolean);
+  $('holes').style.display=anyHole?'':'none';
+  $('polyBtn').style.opacity=anyHole?1:.45;
+  document.querySelectorAll('#holeSeg button').forEach(b=>{b.style.opacity=HOLES[crystal][b.dataset.hole]?1:.4;});
+  if(anyHole)$('holes').innerHTML='<div class="lab">interstitial holes</div><div class="card">'+rows(['tet','oct','cub'].map(t=>[
+    `<i class="${HOLE_ICON[t]}" style="background:#${COL.hole[t].toString(16)}"></i> ${HOLE_NAME[t]}`,
+    HOLES[crystal][t]?`${HOLES[crystal][t].length}/cell · CN ${HOLE_K[t]} · r/R ${fmt(holeRatio(crystal,t))}`:'none']))
+    +'<div class="note" style="margin-top:6px">r/R = hole radius ÷ atom radius for touching hard spheres. BCC holes are distorted.</div></div>';
+
+  const show={db:!!shell,...holeOn};
+  document.querySelectorAll('#leg [data-show]').forEach(el=>{el.style.display=show[el.dataset.show]?'flex':'none';});
+}
+
+function setPlane(v){
+  v=v.map(c=>Math.max(-4,Math.min(4,c)));
+  if(v.every(c=>c===0))return;
+  hkl=v;build();
+}
+const applyDefaultZoom=()=>setCam(showPlane?S*12:viewMode==='ext'?S*6.4:S*3.6);
+
+document.querySelectorAll('.spin').forEach((el,i)=>el.querySelectorAll('button').forEach(b=>
+  b.addEventListener('click',()=>{const v=[...hkl];v[i]+=+b.dataset.d;setPlane(v);})));
+document.querySelectorAll('.qr button').forEach(b=>b.addEventListener('click',()=>setPlane(b.dataset.hkl.split(',').map(Number))));
+function wireSegment(id,onPick){
+  const seg=$(id);
+  seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    seg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    onPick(b.dataset.v);build();
+  }));
+}
+wireSegment('crystalSeg',v=>{crystal=v;});
+wireSegment('viewSeg',v=>{viewMode=v;applyDefaultZoom();});
+$('hklBtn').addEventListener('click',e=>{showHklPlane=!showHklPlane;e.currentTarget.classList.toggle('on',showHklPlane);build();});
+$('planeBtn').addEventListener('click',e=>{showPlane=!showPlane;e.currentTarget.classList.toggle('on',showPlane);applyDefaultZoom();build();});
+$('dangBtn').addEventListener('click',e=>{showDangling=!showDangling;e.currentTarget.classList.toggle('on',showDangling);build();});
+$('polyBtn').addEventListener('click',e=>{showPolyhedra=!showPolyhedra;e.currentTarget.classList.toggle('on',showPolyhedra);build();});
+document.querySelectorAll('#holeSeg button').forEach(b=>b.addEventListener('click',()=>{
+  const t=b.dataset.hole;holeOn[t]=!holeOn[t];b.classList.toggle('on',holeOn[t]);build();}));
+
+// --- view: turntable rotation (no gimbal lock), zoom, reset ------------------
+// Axis convention: a(x) → toward viewer, b(y) → right, c(z) → up.
+// Quaternion(-.5,-.5,-.5,.5) = 120° about (-1,-1,-1), which maps x→+Z, y→+X, z→+Y; then tilt for a 3-face view.
+const INIT_QUAT=new THREE.Quaternion(-.5,-.5,-.5,.5)
+  .premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),.42))
+  .premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),.32));
+const gQuat=INIT_QUAT.clone(),qTmp=new THREE.Quaternion(),AXIS_X=new THREE.Vector3(1,0,0);
+function rotateBy(dx,dy){
+  gQuat.premultiply(qTmp.setFromAxisAngle(Y_AXIS,dx*.013));
+  gQuat.premultiply(qTmp.setFromAxisAngle(AXIS_X,dy*.013));
+}
+$('resetBtn').addEventListener('click',()=>{gQuat.copy(INIT_QUAT);applyDefaultZoom();autoRotate=true;});
+
+const ptrs=new Map();                                  // active pointers: 1 = rotate, 2 = pinch zoom
+canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});autoRotate=false;});
+canvas.addEventListener('pointermove',e=>{
+  const p=ptrs.get(e.pointerId);
+  if(!p)return;
+  if(ptrs.size===1)rotateBy(e.clientX-p.x,e.clientY-p.y);
+  else if(ptrs.size===2){
+    const[a,b]=[...ptrs.values()],before=Math.hypot(a.x-b.x,a.y-b.y);
+    p.x=e.clientX;p.y=e.clientY;
+    const after=Math.hypot(a.x-b.x,a.y-b.y);
+    if(after>0)setCam(camDist*before/after);
+    return;
+  }
+  p.x=e.clientX;p.y=e.clientY;
+});
+['pointerup','pointercancel'].forEach(ev=>canvas.addEventListener(ev,e=>ptrs.delete(e.pointerId)));
+canvas.addEventListener('wheel',e=>{e.preventDefault();setCam(camDist*(e.deltaY>0?1.1:.91));},{passive:false});
+
+function resize(){
+  const w=wrap.clientWidth||600,h=wrap.clientHeight||400;
+  renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+window.addEventListener('resize',resize);
+if(window.ResizeObserver)new ResizeObserver(resize).observe(wrap);
+
+const SPIN=new THREE.Quaternion().setFromAxisAngle(Y_AXIS,.004);
+(function frame(){
+  requestAnimationFrame(frame);
+  if(autoRotate)gQuat.premultiply(SPIN);
+  G.quaternion.copy(gQuat);
+  renderer.render(scene,camera);
+})();
+
+resize();applyDefaultZoom();build();
+</script>
+</body>
+</html>
