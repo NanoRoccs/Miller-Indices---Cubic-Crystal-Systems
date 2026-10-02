@@ -64,8 +64,9 @@ button.on{background:var(--blue);color:#fff}
 #leg span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mute)}
 #leg [data-show]{display:none}
 @media(max-width:680px){
-  #hdr{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  #ctrls{flex-wrap:nowrap}
+  #hdr{flex-wrap:wrap;gap:5px;padding:7px 10px}
+  #hdr h1{font-size:13px}
+  #ctrls{flex-wrap:wrap;gap:5px;width:100%}
   #main{flex-direction:column;position:relative;overflow:hidden}
   #cw{flex:1;min-height:0}
   #pnl{
@@ -522,7 +523,7 @@ function updateUI(shown,shell){
   document.querySelectorAll('.qr button').forEach(b=>b.classList.toggle('on',b.dataset.hkl===hkl.join(',')));
   const low=isLowIndex(hkl);
   $('dang').style.display=showDangling?'':'none';
-  $('dangBtn').style.opacity = low ? 1 : .55;
+  $('dangBtn').style.opacity=low ? 1 : .55;
   $('dangBtn').disabled = !low;
   if(showDangling)$('dang').innerHTML='<div class="lab">dangling bonds · per surface atom</div><div class="card">'+(shell?
     `<div class="counts"><div><b style="color:var(--dang)">${shell.up.length}</b>dangling</div>
